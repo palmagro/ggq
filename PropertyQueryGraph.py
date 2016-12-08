@@ -20,10 +20,11 @@ class PropertyQueryGraph:
         outlinks = [x for x in self.links if not x["alpha"] and name in x["gamma"][0]]
         inlinks = [x for x in self.links if not x["alpha"] and name in x["gamma"][1]]
         for o in outlinks:
-            o["inverse"] = True
-            o["other_node"] = o["gamma"][0]
+            o["inverse"] = False
+            o["other_node"] = o["gamma"][1]
         for i in inlinks:
-            i["inverse"] = False
-            i["other_node"] = i["gamma"][1]
+            i["inverse"] = True
+            i["other_node"] = i["gamma"][0]
         return outlinks+inlinks
- 
+    def __str__(self):
+        return str(self.nodes) + str(self.links)

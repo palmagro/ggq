@@ -13,7 +13,7 @@ class QuerySystem:
         self.subgraph_nodes = []
         self.q = {}
         self.relation = []
-        self.ignorables = ["name","fixed","alpha","tetha","inverse","other_node"]
+        self.ignorables = ["name","fixed","alpha","tetha","inverse","other_node","label"]
         self.graph = Graph("http://"+self.user+":"+self.pss+"@localhost:"+str(self.port)+"/db/data/")
 
     def query(self,query,subgraph_nodes):
@@ -85,6 +85,7 @@ class QuerySystem:
                     if key not in self.ignorables:
                         cypher+="and m."+key+"='"+other_node[key]+"' "
                 cypher += "RETURN m"
+                logging.debug(cypher)
                 ms = self.graph.run(cypher)
             if len(ms.data())>0:
                 return False
