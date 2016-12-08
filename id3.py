@@ -49,15 +49,15 @@ class id3:
         ms = self.getTargets(t_set)
         l = []
         for m in ms:
-            logging.debug(m["n.gender"])
-            l.append(m["n.gender"])
+            logging.debug(m["n."+self.target])
+            l.append(m["n."+self.target])
         logging.warn("Lista de generos para verificar stopcondition:" + str(l))
         return l[1:] == l[:-1]
 
     def leaf(self,t_set):
         ms = self.getTargets(t_set)
         for m in ms:
-            return m["n.gender"]
+            return m["n."+self.target]
 
 
     def bestRefinement(self,query,t_set):
