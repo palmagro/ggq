@@ -12,7 +12,7 @@ Next we we will demonstrate the power of both libraries, in the next eample we a
 
 # Graph Pattern Matching
 
-We will show hot to use **PQG** library first, we start by creating some PQGs...
+We will show how to use **PQG** library first, we start by creating some PQGs...
 
 
 ```python
@@ -124,7 +124,7 @@ print tabulate(l)
 
 # Multi-Relational Decision Tree Learning
 
-Building model, notice that the target field should be present in every node in the training set...
+Now, we demonstrate the power of the **PQG-ID3** library. First, we build a model, notice that the target field should be present in every node in the training set...
 
 
 ```python
