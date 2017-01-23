@@ -9,11 +9,11 @@ import os
 import copy
 import logging
 from Aux import * 
-class id3:
+class Id3:
     
     def __init__(self,port,user,password,target):
         self.graph = Graph("http://"+user+":"+password+"@localhost:"+str(port)+"/db/data/")
-        self.qs = QuerySystem(7474,"neo4j","123456789")
+        self.qs = Qsystem(7474,"neo4j","123456789")
         self.refs = ["a","b"]
         self.target = target
         cypher = "MATCH (n)-[r]->(m) WITH type(r) as via RETURN distinct(via)"

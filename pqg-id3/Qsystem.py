@@ -3,7 +3,7 @@ import itertools
 from random import shuffle
 import logging
 
-class QuerySystem:
+class Qsystem:
 
     def __init__(self,port,user,pss): 
         self.port = port

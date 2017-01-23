@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-class PropertyQueryGraph:
+class Pqg:
     nodes = []
     links = [] 
 

@@ -13,7 +13,7 @@ class Refinement(object):
 
     def refine(self,query):
         temp = str(len(query.nodes))
-        query1 = PropertyQueryGraph()
+        query1 = Pqg()
         for n in query.nodes:
             query1.nodes.append(n)
         for l in query.links:
