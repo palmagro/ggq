@@ -15,6 +15,7 @@ class QuerySystem:
         self.relation = []
         self.ignorables = ["name","fixed","alpha","tetha","tetha_n","inverse","other_node","label"]
         self.graph = Graph("http://"+self.user+":"+self.pss+"@localhost:"+str(self.port)+"/db/data/")
+        logging.basicConfig(filename='example.log',level=logging.ERROR)
 
     def query(self,query,subgraph_nodes):
         self.subgraph_nodes = subgraph_nodes
@@ -48,20 +49,18 @@ class QuerySystem:
         #Verificando que se cumple con las propiedades positivas en tetha
         for key in nq["tetha"]:
             if key != "name" and key != "fixed" and key != "alpha" and key != "tetha":
-                logging.debug("Verificando si la clave "+key+" existe en el nodo ")
-                logging.debug(ns["name"])
+                logging.debug("Verifying if the key "+key+" exists in node"+ns["name"])
                 if not key in ns:
                     return False
-                logging.debug("Verificando si el valor de la clave "+key+" es la correcta en el nodo "+ns["name"])
+                logging.debug("Verifying if the value of key "+key+" is correct in node "+ns["name"])
                 if ns[key] != nq["tetha"][key]:
                     return False            
         #Verificando que se cumple con las propiedades negativas en tetha_n
         for key in nq["tetha_n"]:
             if key != "name" and key != "fixed" and key != "alpha" and key != "tetha":
-                logging.debug("Verificando si la clave "+key+" existe en el nodo ")
-                logging.debug(ns["name"])
+                logging.debug("Verifying if the key "+key+" exists in node"+ns["name"])
                 if key in ns:
-                    logging.debug("Verificando si el valor de la clave "+key+" es la correcta en el nodo "+ns["name"])
+                    logging.debug("Verifying if the value of key "+key+" is correct in node "+ns["name"])
                     if ns[key] == nq["tetha_n"][key]:
                         return False            
         return True
@@ -115,13 +114,13 @@ class QuerySystem:
             else:
                 mss = self.graph.run("MATCH (n)"+l["tetha"]+"(m) where n.name = '"+str(ns["name"])+"' RETURN m")
             mss = mss.data()
-            logging.debug("nodos al otro lado en el subgrafo")
+            logging.debug("nodes at the other side of the subgraph")
             logging.debug(mss)
             if l["inverse"]:
                 nqs = [x for x in self.q.nodes if x["alpha"] and x["label"] == l["gamma"][0]]
             else:
                 nqs = [x for x in self.q.nodes if x["alpha"] and x["label"] == l["gamma"][1]]                
-            logging.debug("nodos al otro lado en el query")
+            logging.debug("nodes at the other side in the query")
             logging.debug(nqs)
             result = False
             for m in mss:

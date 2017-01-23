@@ -1,9 +1,8 @@
-#SE ESTA MACHACANDO EL NODO DEL OTRO QUERY AL AÑADIR PROPIEDADES!!!!
-
 import uuid
 import copy
 import random
-from PropertyQueryGraph import * 
+from Pqg import * 
+
 class Refinement(object):
     def __init__(self,op,node,node_prop_link_type,value=None):
         self.op = op
@@ -16,7 +15,6 @@ class Refinement(object):
         temp = str(len(query.nodes))
         query1 = PropertyQueryGraph()
         for n in query.nodes:
-            
             query1.nodes.append(n)
         for l in query.links:
             query1.links.append(l)

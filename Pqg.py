@@ -34,8 +34,6 @@ class PropertyQueryGraph:
             i["inverse"] = True
             i["other_node"] = i["gamma"][0]
         return outlinks+inlinks
-    def __str__(self):
-        return str(self.nodes) + str(self.links)
 
     def createNX(self,G):
         for n in self.nodes:
@@ -49,7 +47,6 @@ class PropertyQueryGraph:
         pos=nx.spring_layout(g) 
         nx.draw(g,pos, with_labels=True)
         node_colors = [i[1]['color'] for i in g.nodes(data=True)]
-        #print node_colors
         nx.draw_networkx_nodes(g,pos=pos,node_color=node_colors,vmin=0,vmax=1,cmap=plt.cm.autumn)
         edge_labels = {i[0:2]:'{}'.format(i[2]['tetha']) for i in g.edges(data=True)}
         edge_colors = [i[2]['color'] for i in g.edges(data=True)]
@@ -57,3 +54,6 @@ class PropertyQueryGraph:
         for n,p in pos.items():
             pos[n][1] +=0.1;
         nx.draw_networkx_edge_labels(g,pos,font_size=9,edge_labels=edge_labels)
+
+    def __str__(self):
+        return str(self.nodes) + str(self.links)
