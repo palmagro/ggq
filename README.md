@@ -8,7 +8,7 @@ We have implemented our own multi-relational decision tree learning algorithm. T
 
 We present two python libraries: **PQG**, to perform graph pattern matching against a Neo4j DB and **PQG-ID3**, to learn multi-relational decision trees from subgraphs stored in a neo4j DB. It uses the concept of "Property Query Graph" (PQG). A PQG is a multi-relational pattern and every structure immersed in Neo4j will take a true or false value for each PQG (depending on whether it matches its pattern or not).
 
-Next we we will demonstrate the power of both libraries, in the next eample we are using the Neo4j dataset named Minisocial (available in this repository to allow reproducibility of this notebook). 
+Next we we will demonstrate the power of both libraries, in the next eample we are using the Neo4j dataset named Minisocial (available in this repository to allow reproducibility). 
 
 # Graph Pattern Matching
 
