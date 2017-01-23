@@ -156,8 +156,12 @@ tree.draw()
 
 ![png](https://s30.postimg.org/h2rxsfeyp/tree_social1.png)
 
+As we can observe in the resulting decision tree, every inner node in the tree is associated with a PQG that every structure that reach this tree node should match.
 
+Following there are some other decision trees obtained from different Neo4j datasets. A decision trees that classify between actors and movies in TMDb dataset (https://neo4j.com/developer/movie-database/):
 
-```python
+![png](https://s24.postimg.org/8v27kvd5x/tree_cine1.png)
 
-```
+A decision trees that classify between different races in The Hobbit dataset (http://neo4j.com/graphgist/c43ade7d259a77fe49a8):
+
+![png](https://s23.postimg.org/r9cq7wpkr/tree_hobbit1.png)
