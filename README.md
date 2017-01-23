@@ -4,7 +4,7 @@ Induction allows automatic construction of classification trees from a set of pr
  
 We have implemented our own multi-relational decision tree learning algorithm. This implementation has been developed in Python and is able to automatically induce trees from structures (subgraphs) stored in a Neo4j database. The algorithm (inspired by MRDTL and concepts like Graph Simulation and Regular Pattern Matching) use the concept of Property Query Graph (PQG). A PQG is a multi-relational pattern that acts as an attribute in the decision tree construction process. A structure immersed in Neo4j will take a true or false value for each PQG (depending on whether it matches its pattern or not). Such PQGs are built dynamically during the tree construction process: the algorithm performs pattern mining all while learning a classification tree for the structures stored in Neo4j. This algorithm is more efficient, powerful and expressive than classic algorithms of this type that work on relational databases because the data is stored in a graph database. 
 
-[1] Héctor Ariel Leiva, Shashi Gadia, and Drena Dobbs. Mrdtl: A multi-relational decision tree learning algorithm. In Proceedings of the 13th International Conference on Inductive Logic Programming 2003, pages 38–56. Springer-Verlag, 2002.
+[1]: Héctor Ariel Leiva, Shashi Gadia, and Drena Dobbs. Mrdtl: A multi-relational decision tree learning algorithm. In Proceedings of the 13th International Conference on Inductive Logic Programming 2003, pages 38–56. Springer-Verlag, 2002.
 
 We present two python libraries: **PQG**, to perform graph pattern matching against a Neo4j DB and **PQG-ID3**, to learn multi-relational decision trees from subgraphs stored in a neo4j DB. It uses the concept of "Property Query Graph" (PQG). A PQG is a multi-relational pattern and every structure immersed in Neo4j will take a true or false value for each PQG (depending on whether it matches its pattern or not).
 
@@ -154,7 +154,7 @@ tree.draw()
 ```
 
 
-![png](output_11_0.png)
+![png](https://s30.postimg.org/h2rxsfeyp/tree_social1.png)
 
 
 
