@@ -12,7 +12,7 @@ Next we we will demonstrate the power of both libraries, in the next eample we a
 
 # Graph Pattern Matching
 
-We will show how to use **PQG** library first. Every element (node or link) in a PQG have two flag attributes: "alpha" and "fixed". **alpha = true** means that this element in the PQG **should be matched** at least with one node in the graph fulfilling his restrictions. **"alpha = false"** means that can not exists a element in the graph fulfilling his restrictions. **fixed = true** means that this element in the PQG should be matched at least with one node in the structure under analysis. **fixed = false** means that this node/link can match with any node/link in the graph fulfilling his restrictions.
+We will show how to use **PQG** library first. Every element (node or link) in a PQG have two flag attributes: "alpha" and "fixed". **alpha = true** (yellow color) means that this element in the PQG **should be matched** at least with one node in the graph fulfilling his restrictions. **"alpha = false"** (red color) means that can not exists a element in the graph fulfilling his restrictions. **fixed = true** means that this element in the PQG should be matched at least with one node in the structure under analysis. **fixed = false** means that this node/link can match with any node/link in the graph fulfilling his restrictions.
 
 We start by creating some PQGs...
 
