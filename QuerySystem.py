@@ -5,7 +5,7 @@ import logging
 
 class QuerySystem:
 
-    def __init__(self,port,user,pss):
+    def __init__(self,port,user,pss): 
         self.port = port
         self.user = user
         self.pss = pss
@@ -13,7 +13,7 @@ class QuerySystem:
         self.subgraph_nodes = []
         self.q = {}
         self.relation = []
-        self.ignorables = ["name","fixed","alpha","tetha","inverse","other_node","label"]
+        self.ignorables = ["name","fixed","alpha","tetha","tetha_n","inverse","other_node","label"]
         self.graph = Graph("http://"+self.user+":"+self.pss+"@localhost:"+str(self.port)+"/db/data/")
 
     def query(self,query,subgraph_nodes):
@@ -45,6 +45,7 @@ class QuerySystem:
             ns = ns["m"]    
         if nq["fixed"] and ns not in self.subgraph_nodes:
             return False
+        #Verificando que se cumple con las propiedades positivas en tetha
         for key in nq["tetha"]:
             if key != "name" and key != "fixed" and key != "alpha" and key != "tetha":
                 logging.debug("Verificando si la clave "+key+" existe en el nodo ")
@@ -54,6 +55,15 @@ class QuerySystem:
                 logging.debug("Verificando si el valor de la clave "+key+" es la correcta en el nodo "+ns["name"])
                 if ns[key] != nq["tetha"][key]:
                     return False            
+        #Verificando que se cumple con las propiedades negativas en tetha_n
+        for key in nq["tetha_n"]:
+            if key != "name" and key != "fixed" and key != "alpha" and key != "tetha":
+                logging.debug("Verificando si la clave "+key+" existe en el nodo ")
+                logging.debug(ns["name"])
+                if key in ns:
+                    logging.debug("Verificando si el valor de la clave "+key+" es la correcta en el nodo "+ns["name"])
+                    if ns[key] == nq["tetha_n"][key]:
+                        return False            
         return True
 
     def check_nodes(self,ns,nq,checks):
