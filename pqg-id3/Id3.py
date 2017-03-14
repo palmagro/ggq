@@ -9,12 +9,14 @@ import os
 import copy
 import logging
 from Aux import * 
+from collections import Counter
+
 class Id3:
     
     def __init__(self,port,user,password,target):
         self.graph = Graph("http://"+user+":"+password+"@localhost:"+str(port)+"/db/data/")
         self.qs = Qsystem(7474,"neo4j","123456789")
-        self.refs = ["a","b"]
+        self.refs = ["a","b","c","d"]
         self.target = target
         cypher = "MATCH (n)-[r]->(m) WITH type(r) as via RETURN distinct(via)"
         self.types = recordToList(self.graph.run(cypher),"via")
@@ -30,40 +32,60 @@ class Id3:
         for v in self.values:
             cypher = "MATCH (n) RETURN distinct(n."+v+")"
             self.values[v] = recordToList(self.graph.run(cypher),"(n."+v+")")[1:]
-        self.cont = 1
+        self.cont = 0
 
-    def execute_all_nodes(self,query, t_node):
+    def execute_all_nodes(self,query, t_node,rec):
+        print "comenzando ejecucion all"
         cypher = "MATCH (n:"+t_node+") RETURN id(n)"
         ids = recordToList(self.graph.run(cypher),"id(n)")
         temp = []
         for i in ids:
             temp.append([i])
-        return self.execute(query,temp)
-
-    def execute(self,query, t_set):
+        return self.execute(query,temp,rec)
+    #EVALUAR SOLO LAS PROPIEDADES
+    def execute(self,query, t_set,rec):
+        print "comenzando ejecucion"
+        self.cont += 1
         tree = Tree()
         tree.t_set = t_set
         tree.id = "n"+str(self.cont)
-        self.cont += 1
+        tree.idl = "n"+str(self.cont)
+        tree.data = Refinement("","","").clone_query(query)
         if self.stopCondition(t_set):
-            tree.data = query
-            tree.id = "n"+str(self.cont)+"("+str(self.leaf(t_set))+")"
+            tree.idl = "n"+str(self.cont)+"("+str(self.leaf(t_set))+")"
+            tree.id = "n"+str(self.cont)
             return tree
-        delta = self.bestRefinement(query,t_set)
-        c_delta = delta.complement()
-        query_p = delta.refine(query)
-        query_n = c_delta.refine(query)
-        t_set_p = filter(lambda x: self.qs.query(query_p,x), t_set)
-        t_set_n = filter(lambda x: self.qs.query(query_n,x), t_set)
-        tree_p = self.execute(query_p,t_set_p)
-        tree_n = self.execute(query_n,t_set_n)
-        tree.right = tree_n
-        tree.left = tree_p
-        tree.data = query
+        query.checkNodes()
+        if not query.links:
+            print "poraski"
+        #vs = [x for x in query.nodes if x["fixed"] and x["alpha"]][0]
+        #vns = [x for x in query.nodes if not x["fixed"] and ["alpa"]][0]
+        #if not [e for e in query.links if e["gamma"][0] == vs["label"] and e["gamma"][1] == vns["label"]]:
+            delta = Refinement("a",query.nodes[0],query.nodes[1])
+        else:
+#            if not [e for e in query.links if e["gamma"][0] == vns["label"] and e["gamma"][1] == vs["label"]]:
+#                delta = Refinement("a",vns,vs)
+#            else:
+            delta = self.bestRefinement(query,t_set)
+
+        print "todos"
+        print t_set
+        checks = []
+        if rec > 0:
+            tree.childs = []
+            for idx,q in enumerate(delta.refine(query)):
+                t_set_q = filter(lambda x: self.qs.query(q,x,[]), [x for x in t_set if x not in checks])
+                checks += t_set_q
+                print "hijo "+str(idx)
+                print t_set_q
+                tree.childs.append(self.execute(q,t_set_q,rec - 1))
+        else:
+            tree.idl = "n"+str(self.cont)+"("+str(self.leaf_aprox(t_set))+")"
         return tree
         
     def stopCondition(self,t_set):
         l = self.getTargets(t_set)
+        #print l
         return l[1:] == l[:-1]
 
     def leaf(self,t_set):
@@ -73,6 +95,12 @@ class Id3:
         else:
             return "NONE"
 
+    def leaf_aprox(self,t_set):
+        ms = self.getTargets(t_set)
+        if len(ms)>0:
+            return str(max(set(ms), key=ms.count))+"("+str("%.2f" % (float(Counter(ms).most_common(1)[0][1])/len(ms)))+")"
+        else:
+            return "NONE"
 
     def bestRefinement(self,query,t_set): 
         ms = self.getTargets(t_set)
@@ -81,55 +109,52 @@ class Id3:
         maxgain = -999999
         #CHECKING INFORMATION GAIN OF LTYPE REFINEMENT
         for op in self.refs:
-            prop_ref = not(op == "a" or op == "b")
-            if prop_ref:
-                tipos = self.n_props
-            else:
-                tipos = self.types
-            for t in tipos:
-                for n in query.nodes:
-                    if not prop_ref:
-                        r = Refinement(op,n["label"],t)
-                        query_p = r.refine(query)
-                        c_r = r.complement()
-                        query_n = c_r.refine(query)
-                        t_set_p = filter(lambda x: self.qs.query(query_p,x), t_set)
-                        msp = self.getTargets(t_set_p)
-                        freqp=collections.Counter(msp)
-                        t_set_n = filter(lambda x: self.qs.query(query_n,x), t_set)
-                        msn = self.getTargets(t_set_n)
-                        freqn=collections.Counter(msn)
-                        gain = entropy - (stats.entropy(freqp.values()) + stats.entropy(freqn.values()))
-                        logging.warn(logging.warn("query: " + str(query_p)))
-                        logging.warn("ganancia: " + str(gain))
-                        if gain > maxgain:# and gain != 0: 
+            if op == "a" or op == "b":
+                vals1 = [x for x in query.nodes if x["alpha"]]
+                vals2 = vals1
+            if op == "c":
+                vals1 = [x for x in query.links if x["alpha"]]
+                #types son los tipos de aristas
+                vals2 = self.types
+            if op == "d":
+                vals1 = [x for x in query.nodes if x["alpha"]]
+                vals2 = []
+                #n_props son las props de los nodos,
+                for p in self.n_props:
+                    if p != self.target:
+                        #n_values(p) son los valores existentes de la propiedad p de los nodos,
+                        for v in self.values[p]:
+                            vals2.append(str(p)+":'"+str(v)+"'")
+            for v1 in vals1:
+                for v2 in vals2:
+                        checks = []
+                        delta = Refinement(op,v1,v2)
+                        refs = delta.refine(query)
+                        new_entropy = 0
+                        for query_p in refs:
+                            #print [x for x in t_set if x not in checks]
+                            t_set_p = filter(lambda x: self.qs.query(query_p,x,[]), [x for x in t_set if x not in checks])
+                            checks += t_set_p
+                            #print checks
+                            #print [x for x in t_set if x not in checks]
+                            msp = self.getTargets(t_set_p)
+                            freqp=collections.Counter(msp)  
+                            new_entropy += (float(len(t_set_p))/len(t_set))*stats.entropy(freqp.values())
+                        gain = entropy - new_entropy
+                        print "query: " + str(op)+ str(v1)+ str(v2)
+                        #print entropy
+                        #print new_entropy
+                        print gain
+                        #gain = float(gain) / float(entropy)
+                        #print gain
+                        if gain > maxgain:
                             maxgain = gain
                             bestop = op
-                            bestn = n["label"]
-                            bestt = t
-                    #CHECKING INFORMATION GAIN OF ADDED PROPERTIES TO NODES REFINEMENT
-                    else:
-                        for v in self.values[t]:
-                            print v
-                            r = Refinement(op,n["label"],t,v)
-                            query_p = r.refine(query)
-                            c_r = r.complement()
-                            query_n = c_r.refine(query)
-                            t_set_p = filter(lambda x: self.qs.query(query_p,x), t_set)
-                            msp = self.getTargets(t_set_p)
-                            freqp=collections.Counter(msp)
-                            t_set_n = filter(lambda x: self.qs.query(query_n,x), t_set)
-                            msn = self.getTargets(t_set_n)
-                            freqn=collections.Counter(msn)
-                            gain = entropy - (stats.entropy(freqp.values()) + stats.entropy(freqn.values()))
-                            logging.warn(logging.warn("query: " + str(query_p)))
-                            logging.warn("ganancia: " + str(gain))
-                            if gain > maxgain:# and gain != 0: 
-                                maxgain = gain
-                                bestop = op
-                                bestn = n["label"]
-                                bestt = t
-        return Refinement(bestop,bestn,bestt)
+                            bestv1 = v1
+                            bestv2 = v2
+        print "best query: " + str(bestop)+ str(bestv1)+ str(bestv2)
+        print "best ganancia: " + str(maxgain)
+        return Refinement(bestop,bestv1,bestv2)
 
     def getTargets(self,t_set):
         if len(t_set) == 0:
@@ -144,3 +169,5 @@ class Id3:
         for m in ms:
             l.append(m[0])
         return l
+
+

@@ -17,113 +17,69 @@ class Qsystem:
         self.graph = Graph("http://"+self.user+":"+self.pss+"@localhost:"+str(self.port)+"/db/data/")
         logging.basicConfig(filename='example.log',level=logging.ERROR)
 
-    def query(self,query,subgraph_nodes):
-        self.subgraph_nodes = subgraph_nodes
-        self.q = query
-        #In self.V we will save all pairs (set of pairs of query_node-subgraph_node)
-        self.pairs = []
-        #Store query nodes fixed and open
-        fixed = [x for x in query.nodes if x["fixed"] and x["alpha"]]
-        #Store subgraph nodes
-        self.subgraph_nodes = map(lambda x: self.graph.node(x),subgraph_nodes)
-        #Iterating over all possible pairs
-        for s in self.subgraph_nodes:
-            for f in fixed:
-                self.pairs.append([s,f])                
-        #If there is not 1 pair at least, return False!
-        if len(self.pairs) == 0:
-            return False
-        #We will verify if any of the pairs can construct a complete isomorphism!
-        for p in self.pairs:
-            self.relation = []
-            if self.check_nodes(p[0],p[1],[]):
-                return True
-        return False
+    def query(self,query,subgraph_nodes,subgraph_edges):
+        result = True
+        self.set_fixed(subgraph_nodes)
+        for n in query.nodes:
+            fixed_n = []
+            consulta = "MATCH (a{"+self.enumerate_dict(n["tetha"])+(self.comasinovacio(self.enumerate_dict(n["tetha"]))+"inS:true" if n["fixed"] else "")+"}) "
+            consulta += "WHERE "
+#            if n["fixed"]:
+#                consulta += "("
+###                for sn in subgraph_nodes:
+#                    consulta +="id(a) = "+str(sn)+" OR "
+#                consulta += "False) AND "
+            for idx,e in enumerate(query.getInLinks(n["label"])):
+                if not e["alpha"]:
+                    consulta += "NOT "
+                consulta += "(a)<-["+e["tetha"]+"]-("
+                consulta += "{"+self.enumerate_dict(query.getNode(e["gamma"][0])["tetha"])+(self.comasinovacio(self.enumerate_dict(query.getNode(e["gamma"][0])["tetha"]))+"inS:true" if query.getNode(e["gamma"][0])["fixed"] else "")+"}"
+                consulta += ") AND "
+            for idx,e in enumerate(query.getOutLinks(n["label"])):
+                if not e["alpha"]:
+                    consulta += "NOT "
+                consulta += "(a)-["+e["tetha"]+"]->("
+                consulta += "{"+self.enumerate_dict(query.getNode(e["gamma"][1])["tetha"])+(self.comasinovacio(self.enumerate_dict(query.getNode(e["gamma"][1])["tetha"]))+"inS:true" if query.getNode(e["gamma"][1])["fixed"] else "")+"}"
+                consulta += ") AND "
+            consulta += "True RETURN a LIMIT 1"
+            #print consulta
+            if n["alpha"]:
+                result = result and (self.graph.run(consulta).forward() != 0)
+                
+            else:
+                result = result and (self.graph.run(consulta).forward() == 0)  
+                #print consulta   
+                #print "valor fordward"
+                #print self.graph.run(consulta).forward()
+                #print "valor alpha"
+                #print n["alpha"]
+                #print "valor result"
+                #print result           
+        self.undo_fixed(subgraph_nodes)
+        return result
 
-    def isomorph(self,ns,nq):
-        #Avoiding py2neo "capsule"
-        if ns["m"]:
-            ns = ns["m"]    
-        if nq["fixed"] and ns not in self.subgraph_nodes:
-            return False
-        #Verificando que se cumple con las propiedades positivas en tetha
-        for key in nq["tetha"]:
-            if key != "name" and key != "fixed" and key != "alpha" and key != "tetha":
-                logging.debug("Verifying if the key "+key+" exists in node"+ns["name"])
-                if not key in ns:
-                    return False
-                logging.debug("Verifying if the value of key "+key+" is correct in node "+ns["name"])
-                if ns[key] != nq["tetha"][key]:
-                    return False            
-        #Verificando que se cumple con las propiedades negativas en tetha_n
-        for key in nq["tetha_n"]:
-            if key != "name" and key != "fixed" and key != "alpha" and key != "tetha":
-                logging.debug("Verifying if the key "+key+" exists in node"+ns["name"])
-                if key in ns:
-                    logging.debug("Verifying if the value of key "+key+" is correct in node "+ns["name"])
-                    if ns[key] == nq["tetha_n"][key]:
-                        return False            
-        return True
+    def enumerate_dict(self,tetha):
+        if tetha == {}:
+            for k in tetha:
+                if k == "label":
+                    return ":"+tetha[k]
+                else:
+                    string = "{"+tetha[0]
+                    for k,v in enumerate(tetha[1:]):
+                        string += ","+str(k)+":"+v
 
-    def check_nodes(self,ns,nq,checks):
-        #Avoiding py2neo "capsule"
-        if ns["m"]:
-            ns = ns["m"]   
-        logging.debug("Verifying isomorphism between..")
-        logging.debug(ns)
-        logging.debug(nq)
-        if not self.isomorph(ns,nq):
-            return False
-        logging.debug("Verifying absent edge restrictions..")
-        ablinks = self.q.getAbsentLinks(nq["label"])
-        logging.debug(ablinks)
-        for a in ablinks:
-            if a["inverse"]:
-                cypher = "MATCH (m)"+a["tetha"]+"(n) where n.name = '"+str(ns["name"])+"'" 
-                other_node = [x for x in self.q.nodes if x["label"] == a["other_node"]][0]
-                for key in other_node:
-                    if key not in self.ignorables:
-                        cypher+="and m."+key+"='"+other_node[key]+"' "
-                cypher += "RETURN m"
-                ms = self.graph.run(cypher)
-            else:
-                cypher = "MATCH (n)"+a["tetha"]+"(m) where n.name = '"+str(ns["name"])+"'" 
-                other_node = [x for x in self.q.nodes if x["label"] == a["other_node"]][0]
-                logging.debug(other_node)
-                for key in other_node:
-                    if key not in self.ignorables:
-                        cypher+="and m."+key+"='"+other_node[key]+"' "
-                cypher += "RETURN m"
-                logging.debug(cypher)
-                ms = self.graph.run(cypher)
-            if len(ms.data())>0:
-                return False
-        checks.append(nq)
-        self.relation.append([nq,ns])
-        logging.debug("nodes without check!")
-        logging.debug([x for x in self.q.nodes if x["alpha"] and x not in checks])
-        if len([x for x in self.q.nodes if x["alpha"] and x not in checks]) == 0:
-            return True
-        logging.debug("Present links..."        )
-        links = self.q.getPresentLinks(nq["label"])
-        shuffle(links)
-        for l in links:
-            logging.debug(l)
-            if l["inverse"]:
-                mss = self.graph.run("MATCH (m)"+l["tetha"]+"(n) where n.name = '"+str(ns["name"])+"' RETURN m")
-            else:
-                mss = self.graph.run("MATCH (n)"+l["tetha"]+"(m) where n.name = '"+str(ns["name"])+"' RETURN m")
-            mss = mss.data()
-            logging.debug("nodes at the other side of the subgraph")
-            logging.debug(mss)
-            if l["inverse"]:
-                nqs = [x for x in self.q.nodes if x["alpha"] and x["label"] == l["gamma"][0]]
-            else:
-                nqs = [x for x in self.q.nodes if x["alpha"] and x["label"] == l["gamma"][1]]                
-            logging.debug("nodes at the other side in the query")
-            logging.debug(nqs)
-            result = False
-            for m in mss:
-                for n in nqs:
-                    result = result or self.check_nodes(m,n,checks)            
-            return result
+                    return string
+        else:
+            return tetha
+
+    def set_fixed(self,nodes):
+        consulta = "MATCH (n) WHERE id(n)="+str(nodes[0])+" SET n.inS = true"
+        self.graph.run(consulta)
+    def undo_fixed(self,nodes):
+        consulta = "MATCH (n) WHERE id(n)="+str(nodes[0])+" SET n.inS = false"
+        self.graph.run(consulta)
+    def comasinovacio(self,s):
+        if s == "":
+            return ""
+        else:
+            return ","
