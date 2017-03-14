@@ -67,7 +67,7 @@ Creating Query System...
 
 
 ```python
-qs = Qsystem(7474,"neo4j","pytpytpyt")
+qs = Qsystem(7474,"neo4j","******")
 ```
 
 As an example, we evaluate if subgraph "s3" matches with PQG "q1"...
@@ -130,7 +130,7 @@ Now, we demonstrate the power of the **PQG-ID3** library. First, we build a mode
 
 
 ```python
-modelo = Id3(7474,"neo4j","pytpytpyt","gender") #id3(port,neo4j_username,neo4j_password,target_field)
+modelo = Id3(7474,"neo4j","******","gender") #id3(port,neo4j_username,neo4j_password,target_field)
 ```
 
 Creating a starting PQG composed by one empty node (with id "0")...
