@@ -117,7 +117,7 @@ class Id3:
                 #types son los tipos de aristas
                 vals2 = self.types
             if op == "d":
-                vals1 = [x for x in query.nodes if x["alpha"]]
+                vals1 = [x for x in query.nodes if x["alpha"] and all(query.getNode(i)["alpha"] for i in query.getInNeighs(x["label"])+query.getOutNeighs(x["label"]))]
                 vals2 = []
                 #n_props son las props de los nodos,
                 for p in self.n_props:

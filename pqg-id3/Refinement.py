@@ -161,6 +161,8 @@ class Refinement(object):
                 n2 = q4.cloneNode(q4.getNode(e["gamma"][1]),False)
                 e4 = q4.getLink(True,[n1["label"],n2["label"]],e["tetha"],e["fixed"])    
                 q4.addPredE(e4,self.val2)
+                #Boramos las aristas "extras" creadas entre nodos clonados y nodos originales.
+                q4.links = filter(lambda x : not(x["gamma"][0] == e["gamma"][0] and x["gamma"][1] == n2["label"]) and not(x["gamma"][1] == e["gamma"][1] and x["gamma"][0] == n1["label"]), q4.links)
                 refs.append(q4)
             return refs
 
