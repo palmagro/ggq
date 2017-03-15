@@ -71,7 +71,7 @@ class Id3:
         print "todos"
         print t_set
         checks = []
-        if rec > 0:
+        if rec > 0 and delta:
             tree.childs = []
             for idx,q in enumerate(delta.refine(query)):
                 t_set_q = filter(lambda x: self.qs.query(q,x,[]), [x for x in t_set if x not in checks])
@@ -81,6 +81,7 @@ class Id3:
                 tree.childs.append(self.execute(q,t_set_q,rec - 1))
         else:
             tree.idl = "n"+str(self.cont)+"("+str(self.leaf_aprox(t_set))+")"
+            tree.target = str(self.leaf_aprox(t_set))
         return tree
         
     def stopCondition(self,t_set):
@@ -154,7 +155,10 @@ class Id3:
                             bestv2 = v2
         print "best query: " + str(bestop)+ str(bestv1)+ str(bestv2)
         print "best ganancia: " + str(maxgain)
-        return Refinement(bestop,bestv1,bestv2)
+        if maxgain > 0:
+            return Refinement(bestop,bestv1,bestv2)
+        else:
+            return False
 
     def getTargets(self,t_set):
         if len(t_set) == 0:
