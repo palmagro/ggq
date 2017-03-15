@@ -142,10 +142,10 @@ class Id3:
                             freqp=collections.Counter(msp)  
                             new_entropy += (float(len(t_set_p))/len(t_set))*stats.entropy(freqp.values())
                         gain = entropy - new_entropy
-                        print "query: " + str(op)+ str(v1)+ str(v2)
+                        #print "query: " + str(op)+ str(v1)+ str(v2)
                         #print entropy
                         #print new_entropy
-                        print gain
+                        #print gain
                         #gain = float(gain) / float(entropy)
                         #print gain
                         if gain > maxgain:
