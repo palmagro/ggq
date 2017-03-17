@@ -66,17 +66,17 @@ class Qsystem:
                 else:
                     string = "{"+tetha[0]
                     for k,v in enumerate(tetha[1:]):
-                        string += ","+str(k)+":"+v
+                        string += ","+unicode(k)+":"+v
 
                     return string
         else:
             return tetha
 
     def set_fixed(self,nodes):
-        consulta = "MATCH (n) WHERE id(n)="+str(nodes[0])+" SET n.inS = true"
+        consulta = "MATCH (n) WHERE id(n)="+unicode(nodes[0])+" SET n.inS = true"
         self.graph.run(consulta)
     def undo_fixed(self,nodes):
-        consulta = "MATCH (n) WHERE id(n)="+str(nodes[0])+" SET n.inS = false"
+        consulta = "MATCH (n) WHERE id(n)="+unicode(nodes[0])+" SET n.inS = false"
         self.graph.run(consulta)
     def comasinovacio(self,s):
         if s == "":

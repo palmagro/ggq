@@ -126,7 +126,7 @@ class Id3:
                     if p != self.target:
                         #n_values(p) son los valores existentes de la propiedad p de los nodos,
                         for v in self.values[p]:
-                            vals2.append(str(p)+":'"+str(v)+"'")
+                            vals2.append(unicode(p)+":'"+unicode(v)+"'")
             for v1 in vals1:
                 for v2 in vals2:
                         checks = []
@@ -154,8 +154,8 @@ class Id3:
                             bestop = op
                             bestv1 = v1
                             bestv2 = v2
-        print "best query: " + str(bestop)+ str(bestv1)+ str(bestv2)
-        print "best ganancia: " + str(maxgain)
+        print "best query: " + unicode(bestop)+ unicode(bestv1)+ unicode(bestv2)
+        print "best ganancia: " + unicode(maxgain)
         if maxgain > 0:
             return Refinement(bestop,bestv1,bestv2)
         else:
@@ -166,7 +166,7 @@ class Id3:
             return []
         cypher = "MATCH (n) where "
         for e in t_set:
-            cypher += "id(n) = " + str(e[0]) + " or "
+            cypher += "id(n) = " + unicode(e[0]) + " or "
         cypher = cypher[:-3]
         cypher += " RETURN n."+self.target
         ms = self.graph.run(cypher)
