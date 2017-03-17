@@ -48,6 +48,7 @@ class Id3:
         self.cont += 1
         tree = Tree()
         tree.t_set = t_set
+        tree.targets = self.getTargets(t_set)
         tree.id = "n"+str(self.cont)
         tree.idl = "n"+str(self.cont)
         tree.data = Refinement("","","").clone_query(query)
@@ -114,7 +115,7 @@ class Id3:
                 vals1 = [x for x in query.nodes if x["alpha"]]
                 vals2 = vals1
             if op == "c":
-                vals1 = [x for x in query.links if x["alpha"]]
+                vals1 = [x for x in query.links if x["alpha"] and query.getNode(x["gamma"][0])["alpha"] and query.getNode(x["gamma"][1])["alpha"]]
                 #types son los tipos de aristas
                 vals2 = self.types
             if op == "d":
