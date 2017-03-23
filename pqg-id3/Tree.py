@@ -4,7 +4,9 @@ import os
 import shelve
 import matplotlib
 import math
+import pydot
 from StringIO import StringIO
+import os, shutil
 
 class Tree(object):
     def __init__(self):
@@ -23,8 +25,9 @@ class Tree(object):
             G.add_edge(str(self.id),str(c.id),{"label":""})
         return G
 
+
     def draw(self):
-        plt.figure(figsize=(60, 120))
+        plt.figure(figsize=(15, 30))
         plt.clf()
         g=self.createNX(nx.DiGraph(),(self.num_pqgs()+12)/4)
 
@@ -43,6 +46,50 @@ class Tree(object):
         #nx.draw(g,with_labels=True,pos=pos,font_size=8)
         #edge_labels = {i[0:2]:'{}'.format(i[2]['label']) for i in g.edges(data=True)}
         #nx.draw_networkx_edge_labels(g,pos,font_size=9,alpha=10,edge_labels=edge_labels) 
+
+    def createNX_compact(self,G):
+        pydot_graph = self.data.draw_compact()
+        # render pydot by calling dot, no file saved to disk
+        #png_str = pydot_graph.create_png(prog='dot')
+        if hasattr(self, 'idl'):
+            if "(" in self.idl:
+                label = self.idl[self.idl.find("(")+1:self.idl.find(")")] if hasattr(self, 'idl') else ""
+            else:
+                label = ""
+        else:        
+            label = ""
+        if label != "NONE":
+            G.add_node(pydot.Node(str(self.id),image=pydot_graph,label=label,labelloc="t",height="3"))
+            for c in self.childs:
+                G,ltemp = c.createNX_compact(G)
+                if ltemp != "NONE":
+                    G.add_edge(pydot.Edge(str(self.id),str(c.id)))
+        return G,label
+
+    #draw_compact dibuja el arbol con los pqg denro de los nodos y elimina las hojas que no clasifican!
+    def draw_compact(self):
+        plt.figure(figsize=(30, 60))
+        plt.clf()
+        G,temp7 = self.createNX_compact(pydot.Dot(graph_type='digraph'))
+        pydot_graph = G
+        # render pydot by calling dot, no file saved to disk
+        png_str = pydot_graph.create_png(prog='dot')
+        # treat the dot output string as an image file
+        sio = StringIO()
+        sio.write(png_str)
+        sio.seek(0)
+        img = matplotlib.image.imread(sio)
+        plt.axis('off')
+        plt.imshow(img)
+        folder = '/home/pedro/Dropbox/FERNANDO&PEDRO/pqg/pqg-id3/tempimgs/'
+        for the_file in os.listdir(folder):
+            file_path = os.path.join(folder, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(e)
+
 
     def hierarchy_pos(self,G, root, width=2., vert_gap = .2, vert_loc = 0, xcenter = 0.5,pos = None, parent = None):
         if pos == None:

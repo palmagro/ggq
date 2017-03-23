@@ -33,13 +33,13 @@ class Qsystem:
                 if not e["alpha"]:
                     consulta += "NOT "
                 consulta += "(a)<-["+e["tetha"]+"]-("
-                consulta += "{"+self.enumerate_dict(query.getNode(e["gamma"][0])["tetha"])+(self.comasinovacio(self.enumerate_dict(query.getNode(e["gamma"][0])["tetha"]))+"inS:true" if query.getNode(e["gamma"][0])["fixed"] else "")+"}"
+                consulta += "{"+self.enumerate_dict(query.getNode(e["gamma"][0])["tetha"])+self.comasinovacio(self.enumerate_dict(query.getNode(e["gamma"][0])["tetha"]))+("inS:true" if query.getNode(e["gamma"][0])["fixed"] else "inS:false")+"}"
                 consulta += ") AND "
             for idx,e in enumerate(query.getOutLinks(n["label"])):
                 if not e["alpha"]:
                     consulta += "NOT "
                 consulta += "(a)-["+e["tetha"]+"]->("
-                consulta += "{"+self.enumerate_dict(query.getNode(e["gamma"][1])["tetha"])+(self.comasinovacio(self.enumerate_dict(query.getNode(e["gamma"][1])["tetha"]))+"inS:true" if query.getNode(e["gamma"][1])["fixed"] else "")+"}"
+                consulta += "{"+self.enumerate_dict(query.getNode(e["gamma"][1])["tetha"])+self.comasinovacio(self.enumerate_dict(query.getNode(e["gamma"][1])["tetha"]))+("inS:true" if query.getNode(e["gamma"][1])["fixed"] else "inS:false")+"}"
                 consulta += ") AND "
             consulta += "True RETURN a LIMIT 1"
             #print consulta

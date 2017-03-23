@@ -58,7 +58,6 @@ class Id3:
             return tree
         query.checkNodes()
         if not query.links:
-            print "poraski"
         #vs = [x for x in query.nodes if x["fixed"] and x["alpha"]][0]
         #vns = [x for x in query.nodes if not x["fixed"] and ["alpa"]][0]
         #if not [e for e in query.links if e["gamma"][0] == vs["label"] and e["gamma"][1] == vns["label"]]:
@@ -143,12 +142,12 @@ class Id3:
                             freqp=collections.Counter(msp)  
                             new_entropy += (float(len(t_set_p))/len(t_set))*stats.entropy(freqp.values())
                         gain = entropy - new_entropy
-                        #print "query: " + str(op)+ str(v1)+ str(v2)
-                        #print entropy
-                        #print new_entropy
-                        #print gain
-                        #gain = float(gain) / float(entropy)
-                        #print gain
+                        print "query: " + str(op)+ str(v1)+ str(v2)
+                        print entropy
+                        print new_entropy
+                        print gain
+                        gain = float(gain) / float(entropy)
+                        print gain
                         if gain > maxgain:
                             maxgain = gain
                             bestop = op

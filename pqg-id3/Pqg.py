@@ -157,7 +157,7 @@ class Pqg:
     def createNX(self,G):
         for n in self.nodes:
             #print n["tetha"]
-            G.add_node(n["label"],{"label":n["tetha"]+("(v in S)" if n["fixed"] else ""),"color":("black" if n["alpha"] else "red")})
+            G.add_node(n["label"],{"label":n["tetha"]+("(v in S)" if n["fixed"] else "(v not in S)"),"color":("black" if n["alpha"] else "red")})
         for e in self.links:
             G.add_edge(e["gamma"][0],e["gamma"][1],label=e["tetha"],color=("black" if e["alpha"] else "red"))
         return G
@@ -174,6 +174,18 @@ class Pqg:
         img = matplotlib.image.imread(sio)
         plt.axis('off')
         plt.imshow(img)
+
+    def draw_compact(self):
+        g=self.createNX(nx.MultiDiGraph())
+        pydot_graph = nx.drawing.nx_pydot.to_pydot(g)
+        # render pydot by calling dot, no file saved to disk
+        png_str = pydot_graph.create_png(prog='dot')
+        # treat the dot output string as an image file
+        temp = str(uuid.uuid4())
+        with open ('/home/pedro/Dropbox/FERNANDO&PEDRO/pqg/pqg-id3/tempimgs/'+temp+'.png', 'w') as fd:
+             fd.write(png_str)
+        fd.close()
+        return '/home/pedro/Dropbox/FERNANDO&PEDRO/pqg/pqg-id3/tempimgs/'+temp+'.png'
 
     def __str__(self):
         return str(self.nodes) + str(self.links)
