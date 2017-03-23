@@ -44,6 +44,7 @@ class Id3:
         return self.execute(query,temp,rec)
     #EVALUAR SOLO LAS PROPIEDADES
     def execute(self,query, t_set,rec):
+        query.checkNodes()
         print "comenzando ejecucion"
         self.cont += 1
         tree = Tree()
@@ -56,7 +57,6 @@ class Id3:
             tree.idl = "n"+str(self.cont)+"("+str(self.leaf(t_set))+")"
             tree.id = "n"+str(self.cont)
             return tree
-        query.checkNodes()
         if not query.links:
         #vs = [x for x in query.nodes if x["fixed"] and x["alpha"]][0]
         #vns = [x for x in query.nodes if not x["fixed"] and ["alpa"]][0]

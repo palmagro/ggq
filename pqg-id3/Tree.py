@@ -68,7 +68,7 @@ class Tree(object):
 
     #draw_compact dibuja el arbol con los pqg denro de los nodos y elimina las hojas que no clasifican!
     def draw_compact(self):
-        plt.figure(figsize=(30, 60))
+        plt.figure(figsize=(60, 120))
         plt.clf()
         G,temp7 = self.createNX_compact(pydot.Dot(graph_type='digraph'))
         pydot_graph = G
