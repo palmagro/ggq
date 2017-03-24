@@ -5,6 +5,7 @@ import shelve
 import matplotlib
 import math
 import pydot
+from Aux import *
 from StringIO import StringIO
 import os, shutil
 
@@ -17,11 +18,31 @@ class Tree(object):
 
     def createNX(self,G,nrows):
         G.add_node(str(self.id))
-        ax=plt.subplot(nrows, 4,len(G.nodes())+8)
+        ax=plt.subplot(nrows, 4,len(G.nodes()))
         ax.set_title("PQG "+str(self.idl))
         self.data.draw()
         for c in self.childs:
             G = c.createNX(G,nrows)
+            G.add_edge(str(self.id),str(c.id),{"label":""})
+        return G
+
+    def createNX_leafs(self,G,nrows,cont):
+        G.add_node(str(self.id))
+        label = "NONE"
+        if hasattr(self, 'idl'):
+            if "(" in self.idl:
+                label = self.idl[self.idl.find("(")+1:self.idl.find(")")]
+            else:
+                label = ""
+        else:        
+            label = ""
+        if label != "NONE" and label != "":
+            ax=plt.subplot(nrows, 4,cont.cont)
+            cont.cont += 1
+            ax.set_title(label)
+            self.data.draw()
+        for c in self.childs:
+            G = c.createNX_leafs(G,nrows,cont)
             G.add_edge(str(self.id),str(c.id),{"label":""})
         return G
 
@@ -42,15 +63,10 @@ class Tree(object):
         img = matplotlib.image.imread(sio)
         plt.axis('off')
         plt.imshow(img)
-        #pos=self.hierarchy_pos(g,str(self.id))
-        #nx.draw(g,with_labels=True,pos=pos,font_size=8)
-        #edge_labels = {i[0:2]:'{}'.format(i[2]['label']) for i in g.edges(data=True)}
-        #nx.draw_networkx_edge_labels(g,pos,font_size=9,alpha=10,edge_labels=edge_labels) 
 
     def createNX_compact(self,G):
         pydot_graph = self.data.draw_compact()
         # render pydot by calling dot, no file saved to disk
-        #png_str = pydot_graph.create_png(prog='dot')
         if hasattr(self, 'idl'):
             if "(" in self.idl:
                 label = self.idl[self.idl.find("(")+1:self.idl.find(")")] if hasattr(self, 'idl') else ""
@@ -90,6 +106,11 @@ class Tree(object):
             except Exception as e:
                 print(e)
 
+    def draw_leafs(self):
+        plt.figure(figsize=(15, 30))
+        plt.clf()
+        cont = Cont()
+        g=self.createNX_leafs(nx.DiGraph(),(self.num_pqgs()+5)/4,cont)
 
     def hierarchy_pos(self,G, root, width=2., vert_gap = .2, vert_loc = 0, xcenter = 0.5,pos = None, parent = None):
         if pos == None:

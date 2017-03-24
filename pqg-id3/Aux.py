@@ -81,4 +81,6 @@ def getLinks(lines):
             links.append(link)
     return links
 
-
+class Cont(object):
+    def __init__(self):
+        self.cont = 1
