@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import uuid
 from StringIO import StringIO
+from Conf import *
 class Pqg:
     nodes = []
     links = [] 
@@ -182,10 +183,10 @@ class Pqg:
         png_str = pydot_graph.create_png(prog='dot')
         # treat the dot output string as an image file
         temp = str(uuid.uuid4())
-        with open ('/home/pedro/Dropbox/FERNANDO&PEDRO/pqg/pqg-id3/tempimgs/'+temp+'.png', 'w') as fd:
+        with open (path+temp+'.png', 'w') as fd:
              fd.write(png_str)
         fd.close()
-        return '/home/pedro/Dropbox/FERNANDO&PEDRO/pqg/pqg-id3/tempimgs/'+temp+'.png'
+        return path+temp+'.png'
 
     def __str__(self):
         return str(self.nodes) + str(self.links)
