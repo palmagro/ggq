@@ -6,6 +6,7 @@ import matplotlib
 import math
 import pydot
 from Aux import *
+from Conf import *
 from StringIO import StringIO
 import os, shutil
 
@@ -97,9 +98,8 @@ class Tree(object):
         img = matplotlib.image.imread(sio)
         plt.axis('off')
         plt.imshow(img)
-        folder = '/home/pedro/Dropbox/FERNANDO&PEDRO/pqg/pqg-id3/tempimgs/'
-        for the_file in os.listdir(folder):
-            file_path = os.path.join(folder, the_file)
+        for the_file in os.listdir(path):
+            file_path = os.path.join(path, the_file)
             try:
                 if os.path.isfile(file_path):
                     os.unlink(file_path)
