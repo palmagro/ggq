@@ -38,9 +38,9 @@ class Tree(object):
         else:        
             label = ""
         if label != "NONE" and label != "":
-            ax=plt.subplot(nrows, 4,cont.cont)
+            ax=plt.subplot(nrows, 2,cont.cont)
             cont.cont += 1
-            ax.set_title(label)
+            ax.set_title(label,fontdict = {'fontsize': 50})
             self.data.draw()
         for c in self.childs:
             G = c.createNX_leafs(G,nrows,cont)
@@ -49,7 +49,7 @@ class Tree(object):
 
 
     def draw(self):
-        plt.figure(figsize=(15, 30))
+        plt.figure(figsize=(25, 30))
         plt.clf()
         g=self.createNX(nx.DiGraph(),(self.num_pqgs()+12)/4)
 
@@ -85,7 +85,7 @@ class Tree(object):
 
     #draw_compact dibuja el arbol con los pqg denro de los nodos y elimina las hojas que no clasifican!
     def draw_compact(self):
-        plt.figure(figsize=(60, 120))
+        plt.figure(figsize=(120, 240))
         plt.clf()
         G,temp7 = self.createNX_compact(pydot.Dot(graph_type='digraph'))
         pydot_graph = G
@@ -107,10 +107,10 @@ class Tree(object):
                 print(e)
 
     def draw_leafs(self):
-        plt.figure(figsize=(15, 30))
+        plt.figure(figsize=(60, 60))
         plt.clf()
         cont = Cont()
-        g=self.createNX_leafs(nx.DiGraph(),(self.num_pqgs()+5)/4,cont)
+        g=self.createNX_leafs(nx.DiGraph(),(self.num_pqgs()+1)/2,cont)
 
     def hierarchy_pos(self,G, root, width=2., vert_gap = .2, vert_loc = 0, xcenter = 0.5,pos = None, parent = None):
         if pos == None:
