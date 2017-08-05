@@ -34,9 +34,9 @@ class Id3:
             self.values[v] = recordToList(self.graph.run(cypher),"(n."+v+")")[1:]
         self.cont = 0
 
-    def execute_all_nodes(self,query, t_node,rec):
+    def execute_all_nodes(self,query, t_node,rec,limit):
         print "comenzando ejecucion all"
-        cypher = "MATCH (n:"+t_node+") RETURN id(n)"
+        cypher = "MATCH (n:"+t_node+") RETURN id(n) LIMIT "+str(limit)
         ids = recordToList(self.graph.run(cypher),"id(n)")
         temp = []
         for i in ids:
@@ -142,7 +142,7 @@ class Id3:
                             freqp=collections.Counter(msp)  
                             new_entropy += (float(len(t_set_p))/len(t_set))*stats.entropy(freqp.values())
                         gain = entropy - new_entropy
-                        print "query: " + str(op)+ str(v1)+ str(v2)
+                        print "query: " + unicode(op)+ unicode(v1)+ unicode(v2)
                         print entropy
                         print new_entropy
                         print gain

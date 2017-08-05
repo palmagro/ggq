@@ -12,26 +12,29 @@ def recordToList(record,field):
 def NLGtoCypher(f):
     inputfile = codecs.open(f, "r", "utf-8")
     lines = inputfile.read()
+    lines.replace(u'\u0301',"")
     #inputfile = open(f,'r')
-    #graph = Graph("http://neo4j:pytpytpyt@localhost:7474/db/data/")
-    #lines = unicodedata.normalize('NFKD', inputfile)
+    graph = Graph("http://neo4j:pytpytpyt@church.cs.us.es:7474/db/data/")
+    lines = unicodedata.normalize('NFKD', lines)
     #print lines[20]
     lines = lines.splitlines()
     nodes = getNodes(lines)
     links = getLinks(lines)
     inputfile.close()
-    cypher = "CREATE"
-    for n in nodes:
-        cypher +="("+n["id"]+":"+n["type"]+"{"
-        for p in n["props"]:
-            cypher += p+":'"+n["props"][p]+"',"
-        cypher = cypher[:-1]
-        cypher += "}),"
+    print "NODOS LISTOS"
     for l in links:
-        cypher +="("+l["gamma"][0]+")-[:"+l["type"]+"]->("+l["gamma"][1]+"),"
-    cypher = cypher[:-1]
-    print cypher
-    return cypher
+        cypher = "MATCH (a{idx:'"+l["gamma"][0][1:]+"'}),(b{idx:'"+l["gamma"][1][1:]+"'})"
+        cypher += "MERGE (a)-[r:"+l["type"]+"]->(b)"
+        print cypher
+        result = graph.run(cypher)
+    #cypher = cypher[:-1]
+    #print cypher
+    #result = graph.run(cypher)
+    #print cypher
+    #return cypher
+
+def filterIds(s):
+    return s.replace(",","").replace(" ","").replace("(","").replace(")","").replace("-","_").replace("/","_").replace(".","_").replace("'","_").replace("|","_").replace("?","_").replace(":","_")
 
 def noComment(line):
     return line[0] != "%"
@@ -52,12 +55,12 @@ def getNodes(lines):
         for i in range(group[0]+2,group[1]):
             values = re.findall('"([^"]*)"',lines[i])
             node = {}
-            node["id"] = "n"+unicode(values[0])
+            node["id"] = "n"+unicode(filterIds(values[0]))
             node["type"] = values[1].replace(",","").replace(" ","").replace("(","").replace(")","")
-            node["props"] = {}
+            node["props"] = {"idx":unicode(filterIds(values[0]))}
             for idx,p in enumerate(props[2:]):
-                p = p.replace(" ","_").replace("(","").replace(")","").replace("'","").replace("/","")
-                node["props"][p] = values[idx+2].replace("(","").replace(")","").replace("'","").replace("/","")
+                p = p.replace(" ","_").replace("(","").replace(")","").replace("'","").replace("/","").replace('"',"_")
+                node["props"][p] = values[idx+2].replace("(","").replace(")","").replace("'","").replace("/","").replace('"',"_")
             nodes.append(node)
     return nodes
 
@@ -76,7 +79,7 @@ def getLinks(lines):
         for i in range(group[0]+2,group[1]):
             values = re.findall('"([^"]*)"',lines[i])
             link = {}
-            link["gamma"] = ["n"+str(values[0]),"n"+str(values[1])]
+            link["gamma"] = ["n"+filterIds(values[0]),"n"+filterIds(values[1])]
             link["type"] = values[2].replace(" ","_")
             links.append(link)
     return links
