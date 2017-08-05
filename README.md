@@ -89,8 +89,15 @@ qs.query(q7,s4,[])
 
 # Multi-Relational Decision Tree Learning
 
-Now, we demonstrate the power of the **GGQ-ID3** library. We should note that instead the formal work developed for GGQ allows to evaluate any substructure in a graph. The implementation presented here, still is under development, and can only evaluate and learn from structures consisting in only one node. First, we build a model, notice that the target field should be present in every node in the training set...
+Now, we demonstrate the power of the **GGQ-ID3** library. We should note that instead the formal work developed for GGQ allows to evaluate any substructure in a graph. The implementation presented here, still is under development, and can only evaluate and learn from structures consisting in only one node. 
 
+As an example we will learn a decission tree able to classify nodes in the next tiny social graph:
+
+![png](https://s1.postimg.org/s69s3w0of/grafo1.png)
+
+That graph represents some marital connections between users and information related to photographs publication. There are nodes of types user and photo, and edges of types wife, publish and likes. In addition, user nodes have gender property with value F (female) or M (male). photo nodes have None associated to gender property.
+
+We will use GGQ-ID3 algorithm to construct the decision tree that correctly classify all nodes from Figure 2 according to their gender: M, F or None. First, we build a model, notice that the target field should be present in every node in the training set...
 
 ```python
 
@@ -104,7 +111,7 @@ Creating a starting GGQ...
 q = Ggq()
 ```
 
-Learning the decision tree from a training set of nodes (represented by their neo4j id)...
+Learning the decision tree from a training set of nodes...
 
 
 ```python
