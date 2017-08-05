@@ -14,7 +14,7 @@ Next we we will demonstrate the power of both libraries, in the next eample we a
 
 We will show how to use **GGQ** library first. Every element (node or link) in a GGQ have two flag attributes: "alpha" and "fixed". **alpha = true** (black color) means that this element in the GGQ **should be matched** at least with one node in the graph fulfilling his restrictions. **"alpha = false"** (red color) means that can not exists a element in the graph fulfilling the restrictions associated with that element in the GGQ. **fixed = true** means that the element in the GGQ should be matched with an element in the structure under analysis. **fixed = false** means that this element can match with any node/link in the graph fulfilling his restrictions.
 
-We start by creating some PQGs...
+We start by creating some GGQs...
 
 
 ```python
@@ -78,7 +78,7 @@ Creating Query System...
 qs = Qsystem(7474,"neo4j","******")
 ```
 
-As an example, we evaluate if subgraph "s4" matches with PQG "q7"...
+As an example, we evaluate if subgraph "s4" matches with GGQ "q7"...
 
 
 ```python
@@ -97,18 +97,18 @@ Now, we demonstrate the power of the **GGQ-ID3** library. We should note that in
 modelo = Id3(7474,"neo4j","******","gender") #id3(port,neo4j_username,neo4j_password,target_field)
 ```
 
-Creating a starting PQG...
+Creating a starting GGQ...
 
 
 ```python
-q = Pqg()
+q = Ggq()
 ```
 
 Learning the decision tree from a training set of nodes (represented by their neo4j id)...
 
 
 ```python
-tree = modelo.execute_all_nodes(q,"user",5,50) #execute_all_nodes(initial pqg, type node, max tree depth, max nodes)
+tree = modelo.execute_all_nodes(q,"user",5,50) #execute_all_nodes(initial ggq, type node, max tree depth, max nodes)
 ```
 
 Then we can analyze the learned tree...
