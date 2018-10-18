@@ -93,16 +93,7 @@ Now, we demonstrate the power of the **GGQ-ID3** library. We should note that in
 
 As an example we will learn a decission tree able to classify nodes in the next tiny social graph:
 
-[url=https://ibb.co/jpQLY0][img]https://preview.ibb.co/dQMut0/grafo1.png[/img][/url]
-
-![Image of Yaktocat](https://preview.ibb.co/dQMut0/grafo1.png)
-
-[url=https://ibb.co/jpQLY0][img]https://thumb.ibb.co/jpQLY0/grafo1.png[/img][/url]
-
-![alt text](https://imgur.com/a/uJtlOKX "Logo Title Text 1")
-
-#![png](https://s1.postimg.org/s69s3w0of/grafo1.png)
-![png](https://imgur.com/a/uJtlOKX)
+![Toy Social Graph](https://preview.ibb.co/dQMut0/grafo1.png)
 
 That graph represents some marital connections between users and information related to photographs publication. There are nodes of types user and photo, and edges of types wife, publish and likes. In addition, user nodes have gender property with value F (female) or M (male). photo nodes have None associated to gender property.
 
@@ -134,9 +125,7 @@ Then we can analyze the learned tree...
 tree.draw()
 ```
 
-
-#![png](https://s2.postimg.org/xmncirhx5/social1.png)
-![png](https://imgur.com/a/IIDFobX)
+#![Relational Decision Tree](https://preview.ibb.co/kOpdmL/social1.png)
 
 
 As we can observe in the resulting decision tree, every node in the tree is associated with a GGQ that every structure that reach it should match.
