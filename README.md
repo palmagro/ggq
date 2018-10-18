@@ -93,6 +93,8 @@ Now, we demonstrate the power of the **GGQ-ID3** library. We should note that in
 
 As an example we will learn a decission tree able to classify nodes in the next tiny social graph:
 
+[url=https://ibb.co/jpQLY0][img]https://thumb.ibb.co/jpQLY0/grafo1.png[/img][/url]
+
 ![alt text](https://imgur.com/a/uJtlOKX "Logo Title Text 1")
 
 #![png](https://s1.postimg.org/s69s3w0of/grafo1.png)
